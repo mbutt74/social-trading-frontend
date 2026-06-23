@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CopyTrade Pro — Social Trading Platform</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <div class="nav-brand">📈 CopyTrade Pro</div>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="leaderboard.html">Leaderboard</a>
+      <a href="#" onclick="showModal('login-modal')">Login</a>
+      <a href="#" class="btn-primary" onclick="showModal('register-modal')">Get Started</a>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-content">
+      <h1>Copy the Best Traders.<br>Automatically.</h1>
+      <p>Follow top-performing traders on Capital.com and mirror their trades in real time — no experience needed.</p>
+      <div class="hero-buttons">
+        <a href="leaderboard.html" class="btn-primary btn-lg">View Top Traders</a>
+        <a href="#" class="btn-outline btn-lg" onclick="showModal('register-modal')">Start for Free</a>
+      </div>
+    </div>
+    <div class="hero-stats">
+      <div class="stat-card">
+        <div class="stat-number" id="stat-traders">—</div>
+        <div class="stat-label">Active Traders</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number" id="stat-trades">—</div>
+        <div class="stat-label">Trades Copied</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">Demo</div>
+        <div class="stat-label">Safe Testing Mode</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section class="how-it-works">
+    <h2>How It Works</h2>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <h3>Connect your account</h3>
+        <p>Link your Capital.com API key securely to our platform</p>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <h3>Browse top traders</h3>
+        <p>Explore our leaderboard ranked by real performance</p>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <h3>Copy with one click</h3>
+        <p>Follow a trader and their positions are mirrored automatically</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- TOP TRADERS PREVIEW -->
+  <section class="top-traders">
+    <h2>Top Traders This Week</h2>
+    <div class="traders-grid" id="home-leaderboard">
+      <div class="loading">Loading top traders...</div>
+    </div>
+    <a href="leaderboard.html" class="btn-outline">See Full Leaderboard →</a>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <p>⚠️ CFDs are complex instruments and come with a high risk of losing money. 78.48% of retail investor accounts lose money when trading CFDs. Only trade with money you can afford to lose.</p>
+    <p style="margin-top:8px">© 2025 CopyTrade Pro. Powered by Capital.com API.</p>
+  </footer>
+
+  <!-- LOGIN MODAL -->
+  <div id="login-modal" class="modal-overlay" style="display:none">
+    <div class="modal">
+      <button class="modal-close" onclick="hideModal('login-modal')">✕</button>
+      <h2>Login</h2>
+      <input type="email" id="login-email" placeholder="Email" class="input">
+      <input type="password" id="login-password" placeholder="Password" class="input">
+      <button class="btn-primary btn-full" onclick="login()">Login</button>
+      <p class="modal-footer">Don't have an account? <a href="#" onclick="switchModal('login-modal','register-modal')">Register</a></p>
+      <div id="login-msg" class="msg"></div>
+    </div>
+  </div>
+
+  <!-- REGISTER MODAL -->
+  <div id="register-modal" class="modal-overlay" style="display:none">
+    <div class="modal">
+      <button class="modal-close" onclick="hideModal('register-modal')">✕</button>
+      <h2>Create Account</h2>
+      <input type="text" id="reg-username" placeholder="Username" class="input">
+      <input type="email" id="reg-email" placeholder="Email" class="input">
+      <input type="text" id="reg-apikey" placeholder="Capital.com API Key" class="input">
+      <input type="email" id="reg-login" placeholder="Capital.com Login Email" class="input">
+      <input type="password" id="reg-password" placeholder="Capital.com API Password" class="input">
+      <label class="checkbox-label">
+        <input type="checkbox" id="reg-leader"> Register as a trader (allow others to copy me)
+      </label>
+      <button class="btn-primary btn-full" onclick="register()">Create Account</button>
+      <div id="reg-msg" class="msg"></div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+  <script>
+    loadHomeLeaderboard();
+    loadStats();
+  </script>
+</body>
+</html>
