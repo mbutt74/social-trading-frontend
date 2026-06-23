@@ -1,5 +1,5 @@
 // ---- IMPORTANT: paste your Railway URL here ----
-const API = 'https://social-trading-platform-production.up.railway.app/';
+const API = 'https://social-trading-platform-production.up.railway.app';
 
 // ---- Auth helpers ----
 function getUser() { try { return JSON.parse(localStorage.getItem('ct_user')); } catch { return null; } }
