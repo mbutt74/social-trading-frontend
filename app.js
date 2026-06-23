@@ -1,12 +1,9 @@
-// ---- IMPORTANT: paste your Railway URL here ----
 const API = 'https://social-trading-platform-production.up.railway.app';
 
-// ---- Auth helpers ----
 function getUser() { try { return JSON.parse(localStorage.getItem('ct_user')); } catch { return null; } }
 function setUser(u) { localStorage.setItem('ct_user', JSON.stringify(u)); }
 function logout() { localStorage.removeItem('ct_user'); location.reload(); }
 
-// ---- Modal helpers ----
 function showModal(id) { document.getElementById(id).style.display = 'flex'; }
 function hideModal(id) { document.getElementById(id).style.display = 'none'; }
 function switchModal(hide, show) { hideModal(hide); showModal(show); }
@@ -17,18 +14,19 @@ function showMsg(id, text, type) {
   el.className = 'msg ' + type;
 }
 
-// ---- Register ----
 async function register() {
-  const username = document.getElementById('reg-username').value.trim();
-  const email = document.getElementById('reg-email').value.trim();
-  const apiKey = document.getElementById('reg-apikey').value.trim();
-  const capitalLogin = document.getElementById('reg-login').value.trim();
-  const capitalPassword = document.getElementById('reg-password').value.trim();
-  const isLeader = document.getElementById('reg-leader').checked;
+  const username = document.getElementById('reg-username')?.value.trim();
+  const email = document.getElementById('reg-email')?.value.trim();
+  const apiKey = document.getElementById('reg-apikey')?.value.trim();
+  const capitalLogin = document.getElementById('reg-login')?.value.trim();
+  const capitalPassword = document.getElementById('reg-password')?.value.trim();
+  const isLeader = document.getElementById('reg-leader')?.checked;
 
   if (!username || !email || !apiKey || !capitalLogin || !capitalPassword) {
     return showMsg('reg-msg', 'Please fill in all fields', 'error');
   }
+
+  showMsg('reg-msg', 'Creating account...', 'success');
 
   try {
     const res = await fetch(`${API}/trader/register`, {
@@ -36,7 +34,12 @@ async function register() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ username, email, apiKey, capitalLogin, capitalPassword, isLeader })
     });
-    const data = await res.json();
+
+    let data;
+    try { data = await res.json(); } catch (e) {
+      return showMsg('reg-msg', 'Server returned unexpected response (status ' + res.status + ')', 'error');
+    }
+
     if (data.success) {
       setUser(data.trader);
       showMsg('reg-msg', 'Account created! Welcome ' + username, 'success');
@@ -45,34 +48,40 @@ async function register() {
       showMsg('reg-msg', data.error || 'Registration failed', 'error');
     }
   } catch (e) {
-    showMsg('reg-msg', 'Connection error. Check your internet.', 'error');
+    showMsg('reg-msg', 'Cannot reach server. Is Railway running? (' + e.message + ')', 'error');
   }
 }
 
-// ---- Login (simple email lookup) ----
 async function login() {
-  const email = document.getElementById('login-email').value.trim();
+  const email = document.getElementById('login-email')?.value.trim();
   if (!email) return showMsg('login-msg', 'Enter your email', 'error');
+
+  showMsg('login-msg', 'Logging in...', 'success');
+
   try {
     const res = await fetch(`${API}/trader/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email })
     });
-    const data = await res.json();
+
+    let data;
+    try { data = await res.json(); } catch (e) {
+      return showMsg('login-msg', 'Server error (status ' + res.status + ')', 'error');
+    }
+
     if (data.success) {
       setUser(data.trader);
       showMsg('login-msg', 'Welcome back ' + data.trader.username, 'success');
       setTimeout(() => { hideModal('login-modal'); location.reload(); }, 1500);
     } else {
-      showMsg('login-msg', 'Account not found', 'error');
+      showMsg('login-msg', data.error || 'Login failed', 'error');
     }
   } catch (e) {
-    showMsg('login-msg', 'Connection error', 'error');
+    showMsg('login-msg', 'Cannot reach server (' + e.message + ')', 'error');
   }
 }
 
-// ---- Update nav with logged-in user ----
 function updateNavUser() {
   const user = getUser();
   const navAction = document.getElementById('nav-action');
@@ -84,39 +93,6 @@ function updateNavUser() {
   }
 }
 
-// ---- Load home leaderboard (top 3 cards) ----
-async function loadHomeLeaderboard() {
-  try {
-    const res = await fetch(`${API}/leaderboard`);
-    const data = await res.json();
-    const el = document.getElementById('home-leaderboard');
-    if (!el) return;
-    if (!data.leaderboard || data.leaderboard.length === 0) {
-      el.innerHTML = '<p class="loading">No traders yet — be the first to register!</p>';
-      return;
-    }
-    el.innerHTML = data.leaderboard.slice(0, 3).map(t => traderCard(t)).join('');
-  } catch (e) {
-    const el = document.getElementById('home-leaderboard');
-    if (el) el.innerHTML = '<p class="loading">Could not load traders.</p>';
-  }
-}
-
-// ---- Load stats ----
-async function loadStats() {
-  try {
-    const res = await fetch(`${API}/leaderboard`);
-    const data = await res.json();
-    const count = data.leaderboard ? data.leaderboard.length : 0;
-    const trades = data.leaderboard ? data.leaderboard.reduce((s, t) => s + (t.total_trades || 0), 0) : 0;
-    const el1 = document.getElementById('stat-traders');
-    const el2 = document.getElementById('stat-trades');
-    if (el1) el1.textContent = count;
-    if (el2) el2.textContent = trades;
-  } catch (e) {}
-}
-
-// ---- Trader card HTML ----
 function traderCard(t) {
   const profit = parseFloat(t.profit_percent || 0);
   const profitClass = profit >= 0 ? 'positive' : 'negative';
@@ -149,7 +125,36 @@ function traderCard(t) {
     </div>`;
 }
 
-// ---- Load full leaderboard table ----
+async function loadHomeLeaderboard() {
+  try {
+    const res = await fetch(`${API}/leaderboard`);
+    const data = await res.json();
+    const el = document.getElementById('home-leaderboard');
+    if (!el) return;
+    if (!data.leaderboard || data.leaderboard.length === 0) {
+      el.innerHTML = '<p class="loading">No traders yet — be the first to register!</p>';
+      return;
+    }
+    el.innerHTML = data.leaderboard.slice(0, 3).map(t => traderCard(t)).join('');
+  } catch (e) {
+    const el = document.getElementById('home-leaderboard');
+    if (el) el.innerHTML = '<p class="loading">Could not load traders.</p>';
+  }
+}
+
+async function loadStats() {
+  try {
+    const res = await fetch(`${API}/leaderboard`);
+    const data = await res.json();
+    const count = data.leaderboard ? data.leaderboard.length : 0;
+    const trades = data.leaderboard ? data.leaderboard.reduce((s, t) => s + (t.total_trades || 0), 0) : 0;
+    const el1 = document.getElementById('stat-traders');
+    const el2 = document.getElementById('stat-trades');
+    if (el1) el1.textContent = count;
+    if (el2) el2.textContent = trades;
+  } catch (e) {}
+}
+
 async function loadLeaderboard() {
   try {
     const res = await fetch(`${API}/leaderboard`);
@@ -181,7 +186,6 @@ async function loadLeaderboard() {
   }
 }
 
-// ---- Follow a trader ----
 async function followTrader(leaderId) {
   const user = getUser();
   if (!user) { showModal('login-modal'); return; }
@@ -199,11 +203,10 @@ async function followTrader(leaderId) {
       alert(data.error || 'Could not follow trader');
     }
   } catch (e) {
-    alert('Connection error');
+    alert('Connection error: ' + e.message);
   }
 }
 
-// ---- Filter leaderboard ----
 function filterLeaderboard(type, btn) {
   document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
