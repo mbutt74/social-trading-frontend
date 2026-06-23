@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Leaderboard — CopyTrade Pro</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <nav class="navbar">
+    <div class="nav-brand">📈 CopyTrade Pro</div>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="leaderboard.html">Leaderboard</a>
+      <a href="#" id="nav-user"></a>
+      <a href="#" class="btn-primary" id="nav-action" onclick="showModal('login-modal')">Login</a>
+    </div>
+  </nav>
+
+  <section class="page-header">
+    <h1>Trader Leaderboard</h1>
+    <p>Ranked by profit percentage. Updated every 30 seconds.</p>
+  </section>
+
+  <section class="leaderboard-section">
+    <div class="leaderboard-filters">
+      <button class="filter-btn active" onclick="filterLeaderboard('all', this)">All Traders</button>
+      <button class="filter-btn" onclick="filterLeaderboard('leaders', this)">Leaders Only</button>
+    </div>
+
+    <div class="leaderboard-table-wrap">
+      <table class="leaderboard-table">
+        <thead>
+          <tr>
+            <th>Rank</th>
+            <th>Trader</th>
+            <th>Profit %</th>
+            <th>Win Rate</th>
+            <th>Total Trades</th>
+            <th>Followers</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="leaderboard-body">
+          <tr><td colspan="7" class="loading">Loading leaderboard...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- LOGIN MODAL -->
+  <div id="login-modal" class="modal-overlay" style="display:none">
+    <div class="modal">
+      <button class="modal-close" onclick="hideModal('login-modal')">✕</button>
+      <h2>Login</h2>
+      <input type="email" id="login-email" placeholder="Email" class="input">
+      <input type="password" id="login-password" placeholder="Password" class="input">
+      <button class="btn-primary btn-full" onclick="login()">Login</button>
+      <p class="modal-footer">Don't have an account? <a href="index.html">Register on homepage</a></p>
+      <div id="login-msg" class="msg"></div>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <p>⚠️ Past performance is not indicative of future results. Trading CFDs carries significant risk.</p>
+  </footer>
+
+  <script src="app.js"></script>
+  <script>
+    loadLeaderboard();
+    updateNavUser();
+    setInterval(loadLeaderboard, 30000);
+  </script>
+</body>
+</html>
