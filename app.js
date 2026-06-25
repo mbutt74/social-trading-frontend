@@ -1,5 +1,17 @@
 const API = 'https://social-trading-platform-production.up.railway.app';
 
+// Force browser autofill values to be readable by JavaScript
+document.addEventListener('DOMContentLoaded', () => {
+  setTimeout(() => {
+    document.querySelectorAll('input').forEach(input => {
+      input.addEventListener('animationstart', (e) => {
+        if (e.animationName === 'onAutoFillStart') {
+          input.dispatchEvent(new Event('change'));
+        }
+      });
+    });
+  }, 500);
+});
 let currentTraderId = null;
 
 // ---- Auth helpers ----
