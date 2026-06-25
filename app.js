@@ -17,38 +17,39 @@ function showMsg(id, text, type) {
 async function register() {
   const username = document.getElementById('reg-username')?.value.trim();
   const email = document.getElementById('reg-email')?.value.trim();
-  const apiKey = document.getElementById('reg-apikey')?.value.trim();
-  const capitalLogin = document.getElementById('reg-login')?.value.trim();
-  const capitalPassword = document.getElementById('reg-password')?.value.trim();
+  const mtLogin = document.getElementById('reg-mtlogin')?.value.trim();
+  const mtPassword = document.getElementById('reg-mtpassword')?.value.trim();
+  const mtServer = document.getElementById('reg-mtserver')?.value.trim();
+  const mtPlatform = document.getElementById('reg-platform')?.value;
   const isLeader = document.getElementById('reg-leader')?.checked;
 
-  if (!username || !email || !apiKey || !capitalLogin || !capitalPassword) {
+  if (!username || !email || !mtLogin || !mtPassword || !mtServer) {
     return showMsg('reg-msg', 'Please fill in all fields', 'error');
   }
 
-  showMsg('reg-msg', 'Creating account...', 'success');
+  showMsg('reg-msg', 'Connecting to your MT account... this may take up to 60 seconds', 'success');
 
   try {
     const res = await fetch(`${API}/trader/register`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username, email, apiKey, capitalLogin, capitalPassword, isLeader })
+      body: JSON.stringify({ username, email, mtLogin, mtPassword, mtServer, mtPlatform, isLeader })
     });
 
     let data;
-    try { data = await res.json(); } catch (e) {
-      return showMsg('reg-msg', 'Server returned unexpected response (status ' + res.status + ')', 'error');
+    try { data = await res.json(); } catch(e) {
+      return showMsg('reg-msg', 'Server error (status ' + res.status + ')', 'error');
     }
 
     if (data.success) {
       setUser(data.trader);
-      showMsg('reg-msg', 'Account created! Welcome ' + username, 'success');
-      setTimeout(() => { hideModal('register-modal'); location.reload(); }, 1500);
+      showMsg('reg-msg', `✅ Connected! Welcome ${username} — Balance: ${data.trader.currency} ${data.trader.balance?.toFixed(2)}`, 'success');
+      setTimeout(() => { hideModal('register-modal'); location.reload(); }, 2500);
     } else {
       showMsg('reg-msg', data.error || 'Registration failed', 'error');
     }
   } catch (e) {
-    showMsg('reg-msg', 'Cannot reach server. Is Railway running? (' + e.message + ')', 'error');
+    showMsg('reg-msg', 'Cannot reach server (' + e.message + ')', 'error');
   }
 }
 
