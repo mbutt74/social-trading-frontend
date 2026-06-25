@@ -14,8 +14,8 @@
     <div class="nav-links">
       <a href="index.html">Home</a>
       <a href="leaderboard.html">Leaderboard</a>
-      <a href="#" onclick="showModal('login-modal')">Login</a>
-      <a href="#" class="btn-primary" onclick="showModal('register-modal')">Get Started</a>
+      <a href="#" id="nav-user"></a>
+      <a href="#" id="nav-action" class="btn-primary" onclick="showModal('login-modal')">Login</a>
     </div>
   </nav>
 
@@ -23,7 +23,7 @@
   <section class="hero">
     <div class="hero-content">
       <h1>Copy the Best Traders.<br>Automatically.</h1>
-      <p>Follow top-performing traders on Capital.com and mirror their trades in real time — no experience needed.</p>
+      <p>Follow top-performing traders on MT4 & MT5 and mirror their trades in real time — no experience needed.</p>
       <div class="hero-buttons">
         <a href="leaderboard.html" class="btn-primary btn-lg">View Top Traders</a>
         <a href="#" class="btn-outline btn-lg" onclick="showModal('register-modal')">Start for Free</a>
@@ -39,8 +39,8 @@
         <div class="stat-label">Trades Copied</div>
       </div>
       <div class="stat-card">
-        <div class="stat-number">Demo</div>
-        <div class="stat-label">Safe Testing Mode</div>
+        <div class="stat-number">MT4/5</div>
+        <div class="stat-label">Supported Platforms</div>
       </div>
     </div>
   </section>
@@ -51,18 +51,18 @@
     <div class="steps">
       <div class="step">
         <div class="step-num">1</div>
-        <h3>Connect your account</h3>
-        <p>Link your Capital.com API key securely to our platform</p>
+        <h3>Connect your MT account</h3>
+        <p>Link your MT4 or MT5 account from any broker securely to our platform</p>
       </div>
       <div class="step">
         <div class="step-num">2</div>
         <h3>Browse top traders</h3>
-        <p>Explore our leaderboard ranked by real performance</p>
+        <p>Explore our leaderboard ranked by real verified performance</p>
       </div>
       <div class="step">
         <div class="step-num">3</div>
         <h3>Copy with one click</h3>
-        <p>Follow a trader and their positions are mirrored automatically</p>
+        <p>Follow a trader and their positions are mirrored automatically to your account</p>
       </div>
     </div>
   </section>
@@ -78,8 +78,17 @@
 
   <!-- FOOTER -->
   <footer class="footer">
-    <p>⚠️ CFDs are complex instruments and come with a high risk of losing money. 78.48% of retail investor accounts lose money when trading CFDs. Only trade with money you can afford to lose.</p>
-    <p style="margin-top:8px">© 2025 CopyTrade Pro. Powered by Capital.com API.</p>
+    <div class="footer-risk">
+      <strong>⚠️ Risk Warning</strong>
+      <p>CFDs are complex instruments and come with a high risk of losing money rapidly due to leverage. The majority of retail investor accounts lose money when trading CFDs. You should consider whether you understand how CFDs work and whether you can afford to take the high risk of losing your money.</p>
+      <p style="margin-top:8px">Copy trading does not guarantee profit. Past performance of any trader is not a reliable indicator of future results. You are solely responsible for your trading decisions.</p>
+    </div>
+    <div class="footer-links">
+      <a href="terms.html">Terms of Service</a> ·
+      <a href="privacy.html">Privacy Policy</a> ·
+      <a href="risk.html">Risk Disclosure</a>
+    </div>
+    <p style="margin-top:16px">© 2025 CopyTrade Pro. Powered by MetaAPI. All rights reserved.</p>
   </footer>
 
   <!-- LOGIN MODAL -->
@@ -87,39 +96,93 @@
     <div class="modal">
       <button class="modal-close" onclick="hideModal('login-modal')">✕</button>
       <h2>Login</h2>
-      <input type="email" id="login-email" placeholder="Email" class="input">
-      <input type="password" id="login-password" placeholder="Password" class="input">
+      <input type="email" id="login-email" placeholder="Email address" class="input">
       <button class="btn-primary btn-full" onclick="login()">Login</button>
       <p class="modal-footer">Don't have an account? <a href="#" onclick="switchModal('login-modal','register-modal')">Register</a></p>
       <div id="login-msg" class="msg"></div>
     </div>
   </div>
 
- <!-- REGISTER MODAL -->
-<div id="register-modal" class="modal-overlay" style="display:none">
-  <div class="modal">
-    <button class="modal-close" onclick="hideModal('register-modal')">✕</button>
-    <h2>Create Account</h2>
-    <input type="text" id="reg-username" placeholder="Username" class="input">
-    <input type="email" id="reg-email" placeholder="Email address" class="input">
-    <select id="reg-platform" class="input">
-      <option value="mt5">MetaTrader 5 (MT5)</option>
-      <option value="mt4">MetaTrader 4 (MT4)</option>
-    </select>
-    <input type="text" id="reg-mtlogin" placeholder="MT4/MT5 Account Number (e.g. 12345678)" class="input">
-    <input type="password" id="reg-mtpassword" placeholder="MT4/MT5 Password" class="input">
-    <input type="text" id="reg-mtserver" placeholder="Broker Server (e.g. ICMarkets-Live)" class="input">
-    <label class="checkbox-label">
-      <input type="checkbox" id="reg-leader"> Register as a signal provider (allow others to copy me)
-    </label>
-    <button class="btn-primary btn-full" onclick="register()">Connect & Create Account</button>
-    <p style="font-size:11px;color:var(--text2);margin-top:8px;text-align:center">Your credentials are encrypted and used only to mirror trades</p>
-    <div id="reg-msg" class="msg"></div>
+  <!-- REGISTER MODAL -->
+  <div id="register-modal" class="modal-overlay" style="display:none">
+    <div class="modal">
+      <button class="modal-close" onclick="hideModal('register-modal')">✕</button>
+
+      <!-- Step 1: Basic info -->
+      <div id="reg-step1">
+        <h2>Create Account</h2>
+        <p style="color:var(--text2);font-size:13px;margin-bottom:16px">Step 1 of 2 — Your profile</p>
+        <input type="text" id="reg-username" placeholder="Username" class="input">
+        <input type="email" id="reg-email" placeholder="Email address" class="input">
+        <button class="btn-primary btn-full" onclick="registerStep1()">Continue →</button>
+        <p class="modal-footer">Already have an account? <a href="#" onclick="switchModal('register-modal','login-modal')">Login</a></p>
+        <div id="reg-msg1" class="msg"></div>
+      </div>
+
+      <!-- Step 2: Connect MT account -->
+      <div id="reg-step2" style="display:none">
+        <h2>Connect MT Account</h2>
+        <p style="color:var(--text2);font-size:13px;margin-bottom:16px">Step 2 of 2 — Link your MT4/MT5 account</p>
+        <input type="text" id="reg-label" placeholder="Account label (e.g. My ICMarkets MT5)" class="input">
+        <select id="reg-platform" class="input">
+          <option value="mt5">MetaTrader 5 (MT5)</option>
+          <option value="mt4">MetaTrader 4 (MT4)</option>
+        </select>
+        <input type="text" id="reg-mtlogin" placeholder="MT Account Number (e.g. 12345678)" class="input">
+        <input type="password" id="reg-mtpassword" placeholder="MT Password (not investor password)" class="input">
+        <input type="text" id="reg-mtserver" placeholder="Broker Server (e.g. ICMarkets-Live01)" class="input">
+        <label class="checkbox-label">
+          <input type="checkbox" id="reg-leader"> I want to be a signal provider (others can copy me)
+        </label>
+        <button class="btn-primary btn-full" onclick="registerStep2()">Connect & Finish</button>
+        <p style="font-size:11px;color:var(--text2);margin-top:8px;text-align:center">
+          Connection takes up to 60 seconds. Your credentials are encrypted and used only to mirror trades.
+        </p>
+        <div id="reg-msg2" class="msg"></div>
+      </div>
+
+    </div>
   </div>
-</div>
+
+  <!-- ADD ACCOUNT MODAL -->
+  <div id="add-account-modal" class="modal-overlay" style="display:none">
+    <div class="modal">
+      <button class="modal-close" onclick="hideModal('add-account-modal')">✕</button>
+      <h2>Add Another MT Account</h2>
+      <p style="color:var(--text2);font-size:13px;margin-bottom:16px">Connect an additional MT4 or MT5 account</p>
+      <input type="text" id="add-label" placeholder="Account label (e.g. My XM MT4)" class="input">
+      <select id="add-platform" class="input">
+        <option value="mt5">MetaTrader 5 (MT5)</option>
+        <option value="mt4">MetaTrader 4 (MT4)</option>
+      </select>
+      <input type="text" id="add-mtlogin" placeholder="MT Account Number" class="input">
+      <input type="password" id="add-mtpassword" placeholder="MT Password" class="input">
+      <input type="text" id="add-mtserver" placeholder="Broker Server (e.g. XM-Real15)" class="input">
+      <label class="checkbox-label">
+        <input type="checkbox" id="add-leader"> Use this account as a signal provider
+      </label>
+      <button class="btn-primary btn-full" onclick="addAccount()">Connect Account</button>
+      <p style="font-size:11px;color:var(--text2);margin-top:8px;text-align:center">Connection takes up to 60 seconds</p>
+      <div id="add-msg" class="msg"></div>
+    </div>
+  </div>
+
+  <!-- DASHBOARD MODAL (shown after login) -->
+  <div id="dashboard-modal" class="modal-overlay" style="display:none">
+    <div class="modal" style="max-width:520px">
+      <button class="modal-close" onclick="hideModal('dashboard-modal')">✕</button>
+      <h2 id="dash-username">My Dashboard</h2>
+      <div id="dash-accounts" style="margin:16px 0"></div>
+      <button class="btn-outline btn-full" onclick="hideModal('dashboard-modal');showModal('add-account-modal')">
+        + Add Another MT Account
+      </button>
+      <button class="btn-primary btn-full" style="margin-top:8px" onclick="logout()">Logout</button>
+    </div>
+  </div>
 
   <script src="app.js"></script>
   <script>
+    updateNavUser();
     loadHomeLeaderboard();
     loadStats();
   </script>
