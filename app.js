@@ -106,9 +106,15 @@ async function removeAccount(accountId) {
 
 // ---- Step 1: Create basic profile ----
 async function registerStep1() {
-  const username = document.getElementById('reg-username')?.value.trim();
-  const email = document.getElementById('reg-email')?.value.trim();
-  if (!username || !email) return showMsg('reg-msg1', 'Please fill in all fields', 'error');
+  const usernameEl = document.getElementById('reg-username');
+  const emailEl = document.getElementById('reg-email');
+  const username = (usernameEl?.value || usernameEl?.innerText || '').trim();
+  const email = (emailEl?.value || emailEl?.innerText || '').trim();
+
+  if (!username || !email) {
+    showMsg('reg-msg1', 'Please click into each field and retype if needed', 'error');
+    return;
+  }
 
   showMsg('reg-msg1', 'Creating your profile...', 'success');
 
